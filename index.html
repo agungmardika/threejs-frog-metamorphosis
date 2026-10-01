@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metamorfosis Katak 3D Interaktif • e-Biologi & Teknologi Pendidikan</title>
+  <meta name="description" content="Media pembelajaran interaktif 3D metamorfosis katak 6 fase siklus hidup lengkap dengan narasi suara, animasi anatomi, dan kuis biologi.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Vendor Libraries (Local offline first, CDN fallback) -->
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+  <script src="vendor/GLTFLoader.js"></script>
+  <script src="vendor/GLTFExporter.js"></script>
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+      <div class="brand-wrapper">
+        <div class="brand-icon">🐸</div>
+        <div>
+          <h1 class="brand-title">Metamorfosis Katak 3D</h1>
+          <span class="brand-badge">Teknologi Pendidikan • e-Biologi</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button id="btn-auto-tour" class="btn btn-secondary btn-sm" title="Jalankan tur otomatis semua fase">
+          <span class="icon">✨</span> Tur Presentasi Otomatis
+        </button>
+        <button id="btn-open-quiz" class="btn btn-gold btn-sm" title="Uji pemahaman dengan kuis biologi">
+          <span class="icon">📝</span> Kuis Interaktif
+        </button>
+        <button id="btn-screenshot" class="btn btn-primary btn-sm" title="Ambil tangkapan layar HD untuk laporan">
+          <span class="icon">📸</span> Ambil Screenshot Laporan
+        </button>
+      </div>
+    </header>
+
+    <!-- Cycle Stepper Navigation Bar (6 Stages) -->
+    <nav class="stage-stepper-bar">
+      <div id="stages-nav" class="stages-nav-wrapper">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </nav>
+
+    <!-- Main 3-Column Workspace -->
+    <main class="main-workspace">
+
+      <!-- LEFT PANEL: Stage Info & Narration -->
+      <aside class="side-panel">
+        
+        <!-- Header Card -->
+        <section class="panel-card">
+          <div class="card-title-row">
+            <h2 id="stage-title" class="card-title">1. Fase Telur</h2>
+            <span id="step-counter" class="step-counter-badge">Fase 1 dari 6</span>
+          </div>
+          <div id="stage-subtitle" class="card-subtitle">Awal Kehidupan Sang Amfibi</div>
+          <div id="stage-latin" class="latin-name">Ovum Amphibiorum</div>
+
+          <!-- Quick Specs Grid -->
+          <div class="badge-grid">
+            <div class="info-pill">
+              <span class="pill-lbl">⏱️ Durasi</span>
+              <span id="badge-duration" class="pill-val">1 - 3 Minggu</span>
+            </div>
+            <div class="info-pill">
+              <span class="pill-lbl">🫁 Pernapasan</span>
+              <span id="badge-respiration" class="pill-val">Difusi Membran</span>
+            </div>
+            <div class="info-pill">
+              <span class="pill-lbl">🌿 Makanan</span>
+              <span id="badge-diet" class="pill-val">Kuning Telur</span>
+            </div>
+            <div class="info-pill">
+              <span class="pill-lbl">💧 Habitat</span>
+              <span id="badge-habitat" class="pill-val">Permukaan Air</span>
+            </div>
+          </div>
+
+          <p id="stage-summary" style="font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">
+            Telur katak dilapisi lendir tebal yang menjaga embrio tetap aman dari predator dan infeksi jamur.
+          </p>
+        </section>
+
+        <!-- Audio Narration Card -->
+        <section class="narration-box">
+          <div class="narration-header">
+            <span class="narration-label">🎙️ Narasi Pembelajaran</span>
+            <button id="btn-mute" class="tool-btn" style="width:28px; height:28px;" title="Mute Suara">
+              <span class="icon">🔊</span>
+            </button>
+          </div>
+
+          <p id="narration-text" class="narration-text">
+            Fase pertama adalah Telur Katak. Induk katak meletakkan ratusan butir telur di perairan yang tenang...
+          </p>
+
+          <div class="narration-controls">
+            <button id="toggle-speech-btn" class="btn btn-primary" style="flex:1;">
+              <span class="icon">▶️</span> Putar Narasi Suara
+            </button>
+          </div>
+        </section>
+
+        <!-- Step Arrows Bar -->
+        <div class="stage-arrows-bar">
+          <button id="prev-stage-btn" class="btn btn-secondary" style="flex:1;">
+            ← Fase Sebelumnya
+          </button>
+          <button id="next-stage-btn" class="btn btn-primary" style="flex:1;">
+            Fase Selanjutnya →
+          </button>
+        </div>
+
+      </aside>
+
+      <!-- CENTER: 3D WebGL Viewport -->
+      <section class="center-viewport">
+        <div id="canvas-container"></div>
+
+        <!-- Viewport Top Floating Controls -->
+        <div class="viewport-top-bar">
+          <div class="view-controls-group">
+            <button id="btn-reset-cam" class="tool-btn" title="Reset Posisi Kamera">🎯</button>
+            <button id="btn-auto-rotate" class="tool-btn" title="Putar Otomatis Model 3D">🔄</button>
+            <button id="btn-night-mode" class="tool-btn" title="Ubah Waktu Siang / Malam">🌙</button>
+            <button id="btn-wireframe" class="tool-btn" title="Lihat Rangka Poligon 3D (Wireframe)">🕸️</button>
+          </div>
+
+          <div class="view-controls-group">
+            <button id="btn-sound-croak" class="btn btn-secondary btn-sm" title="Dengarkan Suara Khas Katak">
+              🐸 Suara Katak
+            </button>
+            <button id="btn-ambient" class="tool-btn" title="Suara Alam Kolam Air">
+              🌊
+            </button>
+          </div>
+        </div>
+
+        <!-- Viewport Bottom Hint Bar -->
+        <div class="viewport-bottom-bar">
+          <span class="hint-pill">🖱️ <b>Klik & Geser:</b> Putar 360°</span>
+          <span class="hint-pill">🔍 <b>Scroll:</b> Perbesar / Perkecil</span>
+          <span class="hint-pill">📍 <b>Klik Pin Biru:</b> Anatomi Khusus</span>
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: Anatomy, Facts & 3D Assets -->
+      <aside class="side-panel side-panel-right">
+
+        <!-- Tabs Header -->
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="morfologi">Morfologi</button>
+          <button class="tab-btn" data-tab="fakta">Fakta Biologi</button>
+          <button class="tab-btn" data-tab="asset3d">Asset .GLB</button>
+        </div>
+
+        <!-- Tab 1: Morfologi & Fisiologi -->
+        <div id="tab-morfologi" class="tab-pane active">
+          <div class="panel-card" style="padding:14px;">
+            <h3 style="font-size:0.95rem; font-family:var(--font-heading); color:var(--accent-mint); margin-bottom:10px;">
+              🔬 Ciri Morfologi & Adaptasi
+            </h3>
+            <div id="morphology-table" class="morphology-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Fakta Menarik & e-Biologi -->
+        <div id="tab-fakta" class="tab-pane">
+          <div class="did-you-know-card">
+            <div class="dyk-header">
+              <span>💡</span>
+              <h4>Tahukah Kamu?</h4>
+            </div>
+            <p id="fact-text" class="dyk-text">
+              Hormon tiroid (tiroksin) adalah pemicu utama metamorfosis katak!
+            </p>
+          </div>
+
+          <div class="panel-card">
+            <h4 style="font-size:0.9rem; font-family:var(--font-heading); color:#e2e8f0; margin-bottom:8px;">
+              📚 Catatan Laporan Mahasiswa
+            </h4>
+            <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.5;">
+              Metamorfosis katak tergolong <b>Metamorfosis Sempurna (Holometabola)</b> karena bentuk larva (kecebong) sangat berbeda jauh dari bentuk imago (katak dewasa), baik dari segi pernapasan (insang ke paru-paru) maupun pola makan (herbivora ke karnivora).
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 3: Asset 3D GLB & Format Model -->
+        <div id="tab-asset3d" class="tab-pane">
+          <div class="glb-asset-card">
+            <div class="glb-card-header">
+              <span>📦</span>
+              <h4>Format 3D: glTF 2.0 (.GLB)</h4>
+            </div>
+            <p class="glb-card-desc">
+              Aplikasi ini mendukung pembacaan dan ekspor model 3D dalam format standar industri <b>.GLB (Binary glTF)</b> yang kompatibel dengan Blender, Unity, dan XAMPP localhost.
+            </p>
+
+            <div class="glb-btns">
+              <button id="btn-export-glb" class="btn btn-secondary btn-sm" style="flex:1;">
+                💾 Unduh File .GLB
+              </button>
+              <button id="btn-upload-glb" class="btn btn-secondary btn-sm" style="flex:1;">
+                📂 Ganti Model GLB
+              </button>
+              <input type="file" id="glb-file-input" accept=".glb,.gltf" style="display:none;">
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <h4 style="font-size:0.85rem; color:var(--accent-mint); margin-bottom:6px;">
+              📁 Panduan XAMPP Localhost
+            </h4>
+            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">
+              Salin seluruh isi folder ini ke dalam direktori <code>C:\xampp\htdocs\metamorfosis-katak\</code>. Akses melalui browser di <code>http://localhost/metamorfosis-katak/</code>.
+            </p>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+  </div>
+
+  <!-- HOTSPOT DETAIL MODAL -->
+  <div id="hotspot-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="hs-title" class="modal-title">🔍 Detail Anatomi 3D</h3>
+        <button id="hs-close" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="hs-desc" class="hotspot-desc">Penjelasan anatomi organ katak.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERACTIVE BIOLOGY QUIZ MODAL -->
+  <div id="quiz-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">📝 Kuis Evaluasi Metamorfosis Katak</h3>
+        <button id="quiz-modal-close" class="modal-close-btn">&times;</button>
+      </div>
+      <div id="quiz-modal-body" class="modal-body">
+        <!-- Rendered by FrogQuiz -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Application Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
