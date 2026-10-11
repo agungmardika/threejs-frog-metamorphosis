@@ -37,14 +37,17 @@
       </div>
 
       <div class="nav-actions">
+        <button id="btn-toggle-panels" class="btn btn-secondary btn-sm" title="Sembunyikan/tampilkan panel untuk fokus 3D">
+          <span class="icon">👁️</span> Fokus 3D
+        </button>
         <button id="btn-auto-tour" class="btn btn-secondary btn-sm" title="Jalankan tur otomatis semua fase">
-          <span class="icon">✨</span> Tur Presentasi Otomatis
+          <span class="icon">✨</span> Tur Otomatis
         </button>
         <button id="btn-open-quiz" class="btn btn-gold btn-sm" title="Uji pemahaman dengan kuis biologi">
           <span class="icon">📝</span> Kuis Interaktif
         </button>
         <button id="btn-screenshot" class="btn btn-primary btn-sm" title="Ambil tangkapan layar HD untuk laporan">
-          <span class="icon">📸</span> Ambil Screenshot Laporan
+          <span class="icon">📸</span> Ambil Screenshot
         </button>
       </div>
     </header>
@@ -132,22 +135,16 @@
       <section class="center-viewport">
         <div id="canvas-container"></div>
 
-        <!-- Viewport Top Floating Controls -->
+        <!-- Viewport Floating Controls Dock -->
         <div class="viewport-top-bar">
-          <div class="view-controls-group">
+          <div class="floating-controls-dock">
             <button id="btn-reset-cam" class="tool-btn" title="Reset Posisi Kamera">🎯</button>
             <button id="btn-auto-rotate" class="tool-btn" title="Putar Otomatis Model 3D">🔄</button>
             <button id="btn-night-mode" class="tool-btn" title="Ubah Waktu Siang / Malam">🌙</button>
             <button id="btn-wireframe" class="tool-btn" title="Lihat Rangka Poligon 3D (Wireframe)">🕸️</button>
-          </div>
-
-          <div class="view-controls-group">
-            <button id="btn-sound-croak" class="btn btn-secondary btn-sm" title="Dengarkan Suara Khas Katak">
-              🐸 Suara Katak
-            </button>
-            <button id="btn-ambient" class="tool-btn" title="Suara Alam Kolam Air">
-              🌊
-            </button>
+            <div class="tool-divider"></div>
+            <button id="btn-sound-croak" class="tool-btn" title="Dengarkan Suara Khas Katak">🐸</button>
+            <button id="btn-ambient" class="tool-btn" title="Suara Alam Kolam Air">🌊</button>
           </div>
         </div>
 

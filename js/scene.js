@@ -27,8 +27,8 @@ class FrogScene {
 
   initScene() {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x061510);
-    this.scene.fog = new THREE.Fog(0x061510, 8, 22);
+    this.scene.background = new THREE.Color(0x0e1715);
+    this.scene.fog = new THREE.Fog(0x0e1715, 10, 26);
 
     this.camera = new THREE.PerspectiveCamera(
       45,
@@ -59,12 +59,12 @@ class FrogScene {
     this.lightsGroup = new THREE.Group();
     this.scene.add(this.lightsGroup);
 
-    // 1. Ambient Light (Soft Emerald tint)
-    this.ambientLight = new THREE.AmbientLight(0x7ee787, 0.75);
+    // 1. Ambient Light (Soft natural tint)
+    this.ambientLight = new THREE.AmbientLight(0xe4efe8, 0.9);
     this.lightsGroup.add(this.ambientLight);
 
-    // 2. Main Sun Directional Light (Optimized shadow map 1024x1024)
-    this.sunLight = new THREE.DirectionalLight(0xfffaed, 1.3);
+    // 2. Main Sun Directional Light (Soft warm daylight)
+    this.sunLight = new THREE.DirectionalLight(0xfffbf2, 1.25);
     this.sunLight.position.set(4, 7, 4);
     this.sunLight.castShadow = true;
     this.sunLight.shadow.mapSize.width = 1024;
@@ -79,13 +79,13 @@ class FrogScene {
     this.sunLight.shadow.camera.bottom = -d;
     this.lightsGroup.add(this.sunLight);
 
-    // 3. Water Caustics (Cyan fill light)
-    this.causticLight = new THREE.PointLight(0x06b6d4, 1.2, 8);
+    // 3. Water Caustics (Soft turquoise fill light, reduced intensity for gentle pond feel)
+    this.causticLight = new THREE.PointLight(0x56cfe1, 0.55, 8);
     this.causticLight.position.set(0, -1.2, 0);
     this.lightsGroup.add(this.causticLight);
 
     // 4. Subtle Gold Backlight for 3D silhouette separation
-    this.backLight = new THREE.DirectionalLight(0xf59e0b, 0.5);
+    this.backLight = new THREE.DirectionalLight(0xe2b166, 0.35);
     this.backLight.position.set(-4, 3, -3);
     this.lightsGroup.add(this.backLight);
   }
@@ -425,23 +425,25 @@ class FrogScene {
   toggleNightMode() {
     this.isNightMode = !this.isNightMode;
     if (this.isNightMode) {
-      // Night pond biome
-      this.scene.background.set(0x020806);
-      this.scene.fog.color.set(0x020806);
-      this.sunLight.color.set(0x86efac);
-      this.sunLight.intensity = 0.5;
-      this.causticLight.color.set(0x38bdf8);
-      this.causticLight.intensity = 2.4;
-      this.backLight.color.set(0x10b981);
+      // Night pond biome (soft moonlight & tranquil water)
+      this.scene.background.set(0x070e0c);
+      this.scene.fog.color.set(0x070e0c);
+      this.sunLight.color.set(0xa8dadc);
+      this.sunLight.intensity = 0.55;
+      this.causticLight.color.set(0x457b9d);
+      this.causticLight.intensity = 0.75;
+      this.backLight.color.set(0x52b788);
+      this.backLight.intensity = 0.25;
     } else {
-      // Day sunny biome
-      this.scene.background.set(0x061510);
-      this.scene.fog.color.set(0x061510);
-      this.sunLight.color.set(0xfffaed);
-      this.sunLight.intensity = 1.4;
-      this.causticLight.color.set(0x06b6d4);
-      this.causticLight.intensity = 1.8;
-      this.backLight.color.set(0xf59e0b);
+      // Day sunny biome (soft natural daylight)
+      this.scene.background.set(0x0e1715);
+      this.scene.fog.color.set(0x0e1715);
+      this.sunLight.color.set(0xfffbf2);
+      this.sunLight.intensity = 1.25;
+      this.causticLight.color.set(0x56cfe1);
+      this.causticLight.intensity = 0.55;
+      this.backLight.color.set(0xe2b166);
+      this.backLight.intensity = 0.35;
     }
     return this.isNightMode;
   }

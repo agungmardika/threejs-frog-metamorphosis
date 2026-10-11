@@ -214,6 +214,20 @@ document.addEventListener('DOMContentLoaded', () => {
     sceneManager.resetCamera();
   });
 
+  // Toggle Focus Mode (Fullscreen 3D View)
+  const togglePanelsBtn = document.getElementById('btn-toggle-panels');
+  togglePanelsBtn?.addEventListener('click', () => {
+    document.body.classList.toggle('focus-mode');
+    const isFocus = document.body.classList.contains('focus-mode');
+    togglePanelsBtn.classList.toggle('active', isFocus);
+    togglePanelsBtn.innerHTML = isFocus
+      ? `<span class="icon">📑</span> Keluar Fokus`
+      : `<span class="icon">👁️</span> Fokus 3D`;
+    setTimeout(() => {
+      sceneManager.onWindowResize();
+    }, 150);
+  });
+
   const autoRotateBtn = document.getElementById('btn-auto-rotate');
   autoRotateBtn?.addEventListener('click', () => {
     const isRotating = sceneManager.toggleAutoRotate();
@@ -224,7 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
   nightModeBtn?.addEventListener('click', () => {
     const isNight = sceneManager.toggleNightMode();
     nightModeBtn.classList.toggle('active', isNight);
-    nightModeBtn.innerHTML = isNight ? `<span class="icon">🌙</span> Malam` : `<span class="icon">☀️</span> Siang`;
+    nightModeBtn.title = isNight ? "Ubah ke Mode Siang" : "Ubah ke Mode Malam";
+    nightModeBtn.innerHTML = isNight ? `🌙` : `☀️`;
   });
 
   const wireframeBtn = document.getElementById('btn-wireframe');
