@@ -540,7 +540,7 @@ class FrogScene {
       ctx.fillStyle = currentUser.role === 'simari' ? '#f59e0b' : '#74c69d';
       ctx.font = 'bold 15px Plus Jakarta Sans, sans-serif';
       const userText = currentUser.role === 'simari'
-        ? `🏛️ SIMARI: ${currentUser.name} (${currentUser.idNumber})`
+        ? `🎓 ${currentUser.name} (${currentUser.idNumber})`
         : `👤 ${currentUser.name} (${currentUser.roleLabel})`;
       ctx.fillText(userText, w - 32, h - 55);
     }

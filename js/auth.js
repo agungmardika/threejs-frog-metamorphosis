@@ -1,6 +1,6 @@
 /**
- * AUTHENTICATION & ATTENDANCE LOG MODULE (SIMARI & GUEST BUKU TAMU)
- * Modeled after university library/lab digital attendance & SIMARI SSO.
+ * AUTHENTICATION & ATTENDANCE LOG MODULE (MAHASISWA & GUEST BUKU TAMU)
+ * Modeled after university library/lab digital attendance.
  * Persists session and attendance history in localStorage.
  */
 
@@ -26,7 +26,15 @@ class AuthManager {
   loadUser() {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
-      return data ? JSON.parse(data) : null;
+      if (!data) return null;
+      const user = JSON.parse(data);
+      if (user && user.roleLabel && user.roleLabel.includes('SIMARI')) {
+        user.roleLabel = 'Mahasiswa';
+      }
+      if (user && user.avatar === '🏛️') {
+        user.avatar = '🎓';
+      }
+      return user;
     } catch (e) {
       console.error('Gagal membaca data login dari localStorage:', e);
       return null;
@@ -54,7 +62,14 @@ class AuthManager {
   getAttendanceLog() {
     try {
       const raw = localStorage.getItem(this.ATTENDANCE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      if (!raw) return [];
+      const logs = JSON.parse(raw);
+      logs.forEach(l => {
+        if (l.roleLabel && l.roleLabel.includes('SIMARI')) {
+          l.roleLabel = 'Mahasiswa';
+        }
+      });
+      return logs;
     } catch (e) {
       console.error('Gagal membaca log kehadiran:', e);
       return [];
@@ -140,7 +155,7 @@ class AuthManager {
     return user;
   }
 
-  // Login as SIMARI / Mahasiswa (Presensi Perpus / Lab Kampus)
+  // Login as Mahasiswa (Presensi Perpus / Lab Kampus)
   loginAsSimari(name, nim, prodiKelas, purpose) {
     const cleanName = (name || '').trim();
     const cleanNim = (nim || '').trim();
@@ -154,8 +169,8 @@ class AuthManager {
     const user = {
       name: cleanName,
       role: 'simari',
-      roleLabel: 'Mahasiswa SIMARI',
-      avatar: '🏛️',
+      roleLabel: 'Mahasiswa',
+      avatar: '🎓',
       idNumber: cleanNim,
       institution: prodiKelas || 'Teknologi Pendidikan - Kelas B',
       purpose: purpose || 'Praktikum Simulasi 3D Metamorfosis Katak',
@@ -240,7 +255,7 @@ class AuthUI {
       });
     });
 
-    // Quick Fill SIMARI Dimas Nugroho (Tekpend 25)
+    // Quick Fill Mahasiswa Dimas Nugroho (Tekpend 25)
     const btnQuickDimas = document.getElementById('btn-quick-fill-dimas');
     if (btnQuickDimas) {
       btnQuickDimas.addEventListener('click', () => {
@@ -254,7 +269,7 @@ class AuthUI {
       });
     }
 
-    // SIMARI Submit Form
+    // Mahasiswa Submit Form
     const simariForm = document.getElementById('simari-login-form');
     if (simariForm) {
       simariForm.addEventListener('submit', (e) => {
@@ -272,7 +287,7 @@ class AuthUI {
             purposeInput ? purposeInput.value : ''
           );
           this.closeModal();
-          this.showToast(`Presensi Berhasil! Selamat datang, ${user.name} (${user.idNumber}) 🏛️`, 'success');
+          this.showToast(`Presensi Berhasil! Selamat datang, ${user.name} (${user.idNumber}) 🎓`, 'success');
           if (window.audioManager) {
             window.audioManager.playStageTransition();
           }
@@ -413,8 +428,8 @@ class AuthUI {
 
     if (!user) {
       container.innerHTML = `
-        <button class="btn btn-secondary btn-sm nav-login-btn" data-action="open-login" title="Presensi SIMARI atau Masuk Tamu">
-          <span class="icon">🏛️</span> Presensi / Login
+        <button class="btn btn-secondary btn-sm nav-login-btn" data-action="open-login" title="Presensi Mahasiswa atau Masuk Tamu">
+          <span class="icon">🎓</span> Presensi / Login
         </button>
       `;
       return;
@@ -426,17 +441,17 @@ class AuthUI {
     container.innerHTML = `
       <div class="user-pill-dropdown" id="user-pill-dropdown">
         <button class="user-profile-pill" id="btn-user-profile-toggle" title="Presensi Aktif: ${user.name}">
-          <span class="user-avatar-badge">${user.avatar || (isSimari ? '🏛️' : '🐸')}</span>
+          <span class="user-avatar-badge">${user.avatar || (isSimari ? '🎓' : '🐸')}</span>
           <div class="user-meta">
             <span class="user-name-display">${shortName}</span>
-            <span class="user-badge-tag ${isSimari ? 'tag-simari' : 'tag-guest'}">${isSimari ? 'SIMARI' : 'Tamu'}</span>
+            <span class="user-badge-tag ${isSimari ? 'tag-simari' : 'tag-guest'}">${isSimari ? 'Mahasiswa' : 'Tamu'}</span>
           </div>
           <span class="user-dropdown-arrow">▾</span>
         </button>
 
         <div class="user-dropdown-menu hidden" id="user-dropdown-menu">
           <div class="dropdown-header">
-            <div class="dropdown-user-avatar">${user.avatar || '🏛️'}</div>
+            <div class="dropdown-user-avatar">${user.avatar || '🎓'}</div>
             <div class="dropdown-user-details">
               <div class="dropdown-name">${user.name}</div>
               <div class="dropdown-role">${user.roleLabel}</div>
@@ -507,7 +522,7 @@ class AuthUI {
         <div class="att-empty-state">
           <div class="att-empty-icon">📋</div>
           <p class="att-empty-text">Belum ada riwayat presensi kehadiran tercatat.</p>
-          <p class="att-empty-sub">Silakan isi form SIMARI atau Buku Tamu Guest untuk mencatat kehadiran Anda.</p>
+          <p class="att-empty-sub">Silakan isi form Mahasiswa atau Buku Tamu Guest untuk mencatat kehadiran Anda.</p>
         </div>
       `;
       return;
@@ -533,7 +548,7 @@ class AuthUI {
                 <td class="col-id"><span class="att-id-pill">${item.idNumber}</span></td>
                 <td class="col-role">
                   <span class="att-badge ${item.role === 'simari' ? 'badge-simari' : 'badge-guest'}">
-                    ${item.role === 'simari' ? '🏛️ SIMARI' : '👤 Tamu'}
+                    ${item.role === 'simari' ? '🎓 Mahasiswa' : '👤 Tamu'}
                   </span>
                 </td>
                 <td class="col-purpose">${item.purpose || '-'}</td>
