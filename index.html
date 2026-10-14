@@ -46,9 +46,16 @@
         <button id="btn-open-quiz" class="btn btn-gold btn-sm" title="Uji pemahaman dengan kuis biologi">
           <span class="icon">📝</span> Kuis Interaktif
         </button>
+        <button id="btn-attendance-nav" class="btn btn-secondary btn-sm" data-action="open-attendance" title="Lihat Buku Tamu & Daftar Kehadiran">
+          <span class="icon">📋</span> Presensi
+        </button>
         <button id="btn-screenshot" class="btn btn-primary btn-sm" title="Ambil tangkapan layar HD untuk laporan">
           <span class="icon">📸</span> Ambil Screenshot
         </button>
+        <div class="nav-divider"></div>
+        <div id="user-profile-section" class="user-profile-section">
+          <!-- Rendered dynamically by AuthUI -->
+        </div>
       </div>
     </header>
 
@@ -238,6 +245,204 @@
 
   </div>
 
+  <!-- LOGIN & ATTENDANCE ACCESS MODAL (SIMARI & GUEST BUKU TAMU) -->
+  <div id="login-modal" class="modal-overlay hidden">
+    <div class="modal-content auth-modal-content" style="max-width: 560px;">
+      <div class="modal-header">
+        <div class="auth-modal-header-info">
+          <span class="auth-header-icon">🏛️</span>
+          <div>
+            <h3 class="modal-title">Presensi & Login Media 3D</h3>
+            <p class="auth-header-sub">Buku Tamu Laboratorium & Sistem Presensi Terpadu SIMARI</p>
+          </div>
+        </div>
+        <button id="login-modal-close" class="modal-close-btn" title="Tutup / Lanjutkan tanpa login">&times;</button>
+      </div>
+
+      <div class="auth-modal-body">
+        <!-- Mode Switcher Tabs (3 Tabs) -->
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab-btn active" data-tab="simari">
+            <span class="icon">🏛️</span> SIMARI Mahasiswa
+          </button>
+          <button type="button" class="auth-tab-btn" data-tab="guest">
+            <span class="icon">👤</span> Tamu (Guest)
+          </button>
+          <button type="button" class="auth-tab-btn" data-tab="attendance">
+            <span class="icon">📋</span> Daftar Hadir
+          </button>
+        </div>
+
+        <!-- Tab 1: SIMARI Mahasiswa Mode -->
+        <div id="auth-pane-simari" class="auth-tab-pane active">
+          <!-- Quick Fill Button for Dimas Nugroho -->
+          <div class="quick-fill-bar">
+            <button type="button" id="btn-quick-fill-dimas" class="btn-quick-fill" title="Isi cepat akun Dimas Nugroho (Tekpend 25)">
+              <span class="icon">⚡</span> <strong>Isi Cepat:</strong> Dimas Nugroho (NIM 2510130110022 - Tekpend)
+            </button>
+          </div>
+
+          <form id="simari-login-form" class="auth-form">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="simari-nim-input" class="form-label">
+                  NIM Mahasiswa <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="simari-nim-input"
+                  class="form-control"
+                  placeholder="Misal: 2510130110022"
+                  required
+                  autocomplete="username"
+                  maxlength="25"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="simari-name-input" class="form-label">
+                  Nama Lengkap <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="simari-name-input"
+                  class="form-control"
+                  placeholder="Misal: Dimas Nugroho"
+                  required
+                  autocomplete="name"
+                  maxlength="50"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="simari-prodi-input" class="form-label">
+                Program Studi & Kelas
+              </label>
+              <input
+                type="text"
+                id="simari-prodi-input"
+                class="form-control"
+                placeholder="Misal: Teknologi Pendidikan - Kelas B (ULM)"
+                value="Teknologi Pendidikan - Kelas B (ULM)"
+                maxlength="60"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="simari-purpose-input" class="form-label">
+                Keperluan / Tujuan Akses
+              </label>
+              <select id="simari-purpose-input" class="form-control">
+                <option value="Praktikum Simulasi 3D Metamorfosis Katak" selected>🔬 Praktikum Simulasi 3D Metamorfosis Katak</option>
+                <option value="Pengerjaan LKM 7-8-9 Tekpend">📝 Pengerjaan LKM 7-8-9 Pemrograman Komputer</option>
+                <option value="Belajar Mandiri Daur Hidup Amfibi">📚 Belajar Mandiri Daur Hidup Amfibi</option>
+                <option value="Evaluasi Kuis Biologi Interaktif">🎯 Evaluasi Kuis Biologi Interaktif</option>
+                <option value="Pengujian & Demonstrasi Sistem">⚙️ Pengujian & Demonstrasi Sistem</option>
+              </select>
+            </div>
+
+            <p class="form-hint">
+              🏛️ Presensi login otomatis dicatat ke Buku Tamu Laboratorium dan dicantumkan pada sertifikat kuis & watermark screenshot.
+            </p>
+
+            <div class="auth-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                🏛️ Masuk & Simpan Presensi SIMARI
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tab 2: Guest Mode (Buku Tamu Pengunjung) -->
+        <div id="auth-pane-guest" class="auth-tab-pane">
+          <form id="guest-login-form" class="auth-form">
+            <div class="form-group">
+              <label for="guest-name-input" class="form-label">
+                <span>Nama Tamu / Panggilan</span>
+                <span class="label-badge">Bisa Diisi Bebas</span>
+              </label>
+              <div class="input-with-action">
+                <input
+                  type="text"
+                  id="guest-name-input"
+                  class="form-control"
+                  placeholder="Ketik nama Anda (misal: Budi, Maya, Penjelajah...)"
+                  autocomplete="nickname"
+                  maxlength="30"
+                />
+                <button type="button" id="btn-random-guest-name" class="btn btn-secondary btn-sm" title="Buat nama unik otomatis">
+                  🎲 Acak Nama
+                </button>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="guest-category-input" class="form-label">Kategori Tamu</label>
+                <select id="guest-category-input" class="form-control">
+                  <option value="Pengunjung Umum" selected>Pengunjung Umum / Bebas</option>
+                  <option value="Dosen Penilai / Penguji">Dosen Penilai / Penguji</option>
+                  <option value="Mahasiswa Non-Tekpend">Mahasiswa Universitas Lain</option>
+                  <option value="Siswa / Pelajar">Siswa / Pelajar</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="guest-purpose-input" class="form-label">Keperluan</label>
+                <input
+                  type="text"
+                  id="guest-purpose-input"
+                  class="form-control"
+                  placeholder="Misal: Eksplorasi 3D"
+                  value="Eksplorasi Belajar 3D Katak"
+                  maxlength="40"
+                />
+              </div>
+            </div>
+
+            <p class="form-hint">
+              💡 Mode Tamu (Guest) memungkinkan siapa saja menjelajahi media 3D dengan nama pilihan tanpa password.
+            </p>
+
+            <div class="auth-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                🚀 Masuk sebagai Guest
+              </button>
+              <button type="button" id="btn-quick-guest" class="btn btn-secondary btn-block">
+                ⚡ Masuk Cepat Langsung
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tab 3: Attendance Log / Buku Tamu (Perpus Style) -->
+        <div id="auth-pane-attendance" class="auth-tab-pane">
+          <div class="att-pane-header">
+            <div>
+              <h4 class="att-pane-title">📋 Buku Tamu & Presensi Pengunjung</h4>
+              <p class="att-pane-sub">Catatan riwayat pengunjung simulasi 3D perpustakaan / lab digital</p>
+            </div>
+          </div>
+
+          <div id="attendance-list-table" class="attendance-table-container">
+            <!-- Rendered dynamically by AuthUI -->
+          </div>
+
+          <div class="att-actions-bar">
+            <button type="button" id="btn-export-attendance" class="btn btn-secondary btn-sm">
+              <span class="icon">📥</span> Ekspor CSV (Excel)
+            </button>
+            <button type="button" id="btn-clear-attendance" class="btn btn-secondary btn-sm text-danger">
+              <span class="icon">🗑️</span> Hapus Riwayat
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- HOTSPOT DETAIL MODAL -->
   <div id="hotspot-modal" class="modal-overlay hidden">
     <div class="modal-content">
@@ -270,6 +475,7 @@
   <script src="js/models.js"></script>
   <script src="js/scene.js"></script>
   <script src="js/quiz.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
 
 </body>

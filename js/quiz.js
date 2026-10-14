@@ -30,9 +30,23 @@ class FrogQuiz {
 
     const q = this.questions[this.currentIndex];
     const progressPercent = ((this.currentIndex + 1) / this.questions.length) * 100;
+    const currentUser = window.authManager?.getUser();
+    const userBadgeHtml = currentUser ? `
+      <div class="quiz-user-badge">
+        <span>${currentUser.avatar || '👤'}</span>
+        <span>Peserta: <strong>${currentUser.name}</strong> (${currentUser.roleLabel})</span>
+      </div>
+    ` : `
+      <div class="quiz-user-badge">
+        <span>👤</span>
+        <span>Peserta: <strong>Tamu Belum Terdaftar</strong> • <a href="#" data-action="open-login" style="color:var(--accent-mint-soft); text-decoration:underline;">Masuk / Isi Nama</a></span>
+      </div>
+    `;
 
     this.container.innerHTML = `
       <div class="quiz-card">
+        ${userBadgeHtml}
+
         <div class="quiz-header">
           <div class="quiz-badge">Soal ${this.currentIndex + 1} dari ${this.questions.length}</div>
           <div class="quiz-score-badge">Skor Saat Ini: ${this.score * 20}</div>
@@ -126,11 +140,22 @@ class FrogQuiz {
       window.confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
     }
 
+    const currentUser = window.authManager?.getUser();
+    const certHtml = currentUser ? `
+      <div class="quiz-cert-card">
+        <div class="quiz-cert-sub">Laporan Evaluasi Pembelajaran e-Biologi 3D</div>
+        <div class="quiz-cert-name">${currentUser.avatar || '🎓'} ${currentUser.name}</div>
+        <div class="quiz-cert-sub">${currentUser.role === 'simari' ? `NIM: ${currentUser.idNumber} • ${currentUser.institution}` : `${currentUser.roleLabel} • ${currentUser.institution}`}</div>
+      </div>
+    ` : '';
+
     this.container.innerHTML = `
       <div class="quiz-results-card">
         <div class="results-icon">${passed ? '🏆' : '🌱'}</div>
         <h2 class="results-title">${passed ? 'Selamat! Pemahaman Luar Biasa!' : 'Tetap Semangat Belajar!'}</h2>
         <p class="results-subtitle">Evaluasi Pembelajaran Metamorfosis Katak Interaktif</p>
+
+        ${certHtml}
 
         <div class="results-score-circle">
           <span class="score-number">${finalScore}</span>

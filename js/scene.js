@@ -499,8 +499,10 @@ class FrogScene {
   // -------------------------------------------------------------
   // HIGH-RESOLUTION SCREENSHOT FOR UNIVERSITY / COLLEGE REPORT
   // -------------------------------------------------------------
-  captureScreenshot(metadata) {
+  captureScreenshot(metadata, user) {
     this.renderer.render(this.scene, this.camera);
+
+    const currentUser = user || window.authManager?.getUser();
 
     // Create a 2D canvas overlay to stamp high-end report watermark and stage details
     const captureCanvas = document.createElement('canvas');
@@ -525,14 +527,24 @@ class FrogScene {
     // Title & Info
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 24px Outfit, sans-serif';
+    ctx.textAlign = 'left';
     ctx.fillText(`🐸 ${metadata.title || "Metamorfosis Katak 3D"}`, 32, h - 55);
 
     ctx.fillStyle = '#34d399';
     ctx.font = '16px Plus Jakarta Sans, sans-serif';
     ctx.fillText(`${metadata.latinName || ""} • Durasi: ${metadata.duration || ""} • Pernapasan: ${metadata.respiration || ""}`, 32, h - 25);
 
-    // Timestamp & Watermark right side
+    // User attribution & Timestamp on right side
     ctx.textAlign = 'right';
+    if (currentUser) {
+      ctx.fillStyle = currentUser.role === 'simari' ? '#f59e0b' : '#74c69d';
+      ctx.font = 'bold 15px Plus Jakarta Sans, sans-serif';
+      const userText = currentUser.role === 'simari'
+        ? `🏛️ SIMARI: ${currentUser.name} (${currentUser.idNumber})`
+        : `👤 ${currentUser.name} (${currentUser.roleLabel})`;
+      ctx.fillText(userText, w - 32, h - 55);
+    }
+
     ctx.fillStyle = '#94a3b8';
     ctx.font = '14px Plus Jakarta Sans, sans-serif';
     const now = new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -542,7 +554,7 @@ class FrogScene {
     const dataUrl = captureCanvas.toDataURL('image/png');
     const link = document.createElement('a');
     link.href = dataUrl;
-    link.download = `Metamorfosis_Katak_Fase_${this.currentStageIndex + 1}_Screenshot.png`;
+    link.download = `Metamorfosis_Katak_Fase_${this.currentStageIndex + 1}_${currentUser ? currentUser.name.replace(/\s+/g, '_') : 'Screenshot'}.png`;
     link.click();
   }
 

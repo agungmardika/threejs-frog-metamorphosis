@@ -9,7 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize Core Engines
   const audioManager = new AudioManager();
+  window.audioManager = audioManager;
   const sceneManager = new FrogScene(container);
+  window.sceneManager = sceneManager;
+
+  // Initialize Auth & Guest UI
+  if (window.authManager) {
+    window.authUI = new AuthUI(window.authManager);
+  }
+
   let currentStageIndex = 0;
   let autoTourInterval = null;
   let isAutoTouring = false;
@@ -289,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // -------------------------------------------------------------
   document.getElementById('btn-screenshot')?.addEventListener('click', () => {
     const metadata = STAGES_DATA[currentStageIndex];
-    sceneManager.captureScreenshot(metadata);
+    sceneManager.captureScreenshot(metadata, window.authManager?.getUser());
   });
 
   // -------------------------------------------------------------
